@@ -34,7 +34,7 @@ class Solution {
             }
         }
         
-        // 도난 안당한 학생
+        // 체육복 못빌린 학생
         for (int l : lost) {
             if (l > 0) {
                 answer++;
