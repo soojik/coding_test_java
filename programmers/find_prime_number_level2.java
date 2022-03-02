@@ -1,69 +1,115 @@
-public static int solution(String numbers){
-    int len = numbers.length();
-    // String 배열로 숫자 하나씩 담아주기
-    String[] str = new String[len];
-    for(int i=0;i<len;i++){
-        str[i] = Character.toString(numbers.charAt(i));
-    }
-    boolean[] visited = new boolean[len];
-    Arrays.fill(visited, false);
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.TreeSet;
 
-    // 1개부터 배열의 개수만큼 순열만들기
-    for(int i=0;i<len;i++) {
-        permutation_dfs(str, visited, "", i+1, 0);
-    }
-    return set == null ? 0 : set.size();
-}
+class Solution {
 
-/**
- *  dfs를 이용하여 순열 만들기
- *
- *  @param arr : 숫자가 담긴 String 배열
- *  @param visited : 방문여부 판단
- *  @param str : 소수 판단할 수
- *  @param r : 순열을 만들 갯수
- *  @param depth : 순열 개수 체크
- * */
-public static void permutation_dfs(String[] arr, boolean[] visited, String str, int r, int depth){
-    //
-    if(depth == r){
-        int n = Integer.parseInt(str);
-        // 소수이면서, set에 없는 숫자만 담는다.
-        if(isPrime(n) && !set.contains(n)){
-            set.add(n);
-        }
-        return;
-    }
+	private TreeSet<String> set = new TreeSet<>();
+	private int count;
 
-    for(int i=0;i<arr.length;i++){
-        // 방문하지 않은 경우
-        if(!visited[i]){
-            visited[i] = true;
-            str += arr[i];
-            permutation_dfs(arr, visited, str, r, depth+1);
-            // 현재 숫자말고 다른 숫자를 선택하는 경우 str에서 위에서 방문한 숫자 지워주기
-            str = str.substring(0, str.length() - 1);
-            visited[i] = false;
+	public static void main(String[] args) {
 
-        }
-    }
-}
+		String numbers = "11112";
+		Solution s = new Solution();
+		System.out.println(s.solution(numbers));
 
-// 소수체크 ( 0,1은 소수 아님 , 2,3은 소수)
-// 제곱근까지 나누면서 나눠지는지 체크
-public static boolean isPrime(int n) {
-    if(n <= 1) {
-        return false;
-    }
+	}
 
-    if( n == 2 || n == 3){
-        return true;
-    }
+	public int solution(String numbers) {
 
-    for(int i=2; i<=(int)Math.sqrt(n); i++) {
-        if(n % i == 0) {
-            return false;
-        }
-    }
-    return true;
+		int size = numbers.length();
+
+		// 리스트에 담아줌
+		List<Character> arr = new ArrayList<>();
+		for (int i = 0; i < size; i++) {
+			arr.add(numbers.charAt(i));
+		}
+
+		// 결과를 저장할 리스트
+		List<Character> result = new ArrayList<>();
+
+		// nPr에서 r을 계속 늘리면서 순열 알고리즘 수행
+		for (int i = 0; i < size; i++) {
+			permutation(arr, result, size, i + 1);
+		}
+
+		return count;
+	}
+
+	/**
+	 * 소수 판별
+	 * 
+	 * @param n : 판별할 숫자
+	 * @return
+	 */
+	private boolean isPrime(int n) {
+
+		int i;
+		int sqrt = (int) Math.sqrt(n);
+
+		// 2는 유일한 짝수 소수
+		if (n == 2)
+			return true;
+
+		// 짝수와 1은 소수가 아님
+		if (n % 2 == 0 || n == 1)
+			return false;
+
+		// 제곱근까지만 홀수로 나눠보면 됨
+		for (i = 3; i <= sqrt; i += 2) {
+			if (n % i == 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * 순열 알고리즘
+	 * 
+	 * @param arr    : 원본 리스트
+	 * @param result : 결과 담을 리스트
+	 * @param n      : 전체 갯수
+	 * @param r      : 선택할 갯수
+	 */
+	public void permutation(List<Character> arr, List<Character> result, int n, int r) {
+
+		if (r == 0) {
+
+			// 0으로 시작하는 부분집합은 제외
+			if (result.get(0) != '0') {
+
+				String str = "";
+				int size = result.size();
+				for (int i = 0; i < size; i++) {
+					str += result.get(i);
+				}
+
+				int num = 0;
+
+				// 이미 나온 숫자 조합이 아닐 경우
+				if (!set.contains(str)) {
+					num = Integer.parseInt(str);
+					set.add(str);
+
+					// 소수 판별
+					if (isPrime(num)) {
+						System.out.println(num);
+						count++;
+					}
+				}
+			}
+
+			return;
+		}
+
+		for (int i = 0; i < n; i++) {
+
+			result.add(arr.remove(i));
+			permutation(arr, result, n - 1, r - 1);
+			arr.add(i, result.remove(result.size() - 1));
+		}
+
+	}
 }
